@@ -23,7 +23,6 @@ def ReLU(x):
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
-#Setting up starting functions
 def forwardpropagation(X):
     z1 = np.dot(X, W1) + b1
     a1 = ReLU(z1)
@@ -36,3 +35,52 @@ def compute_loss(y_true, y_pred):
     y_pred = np.clip(y_pred, epsilon, 1 - epsilon)  # clip to prevent log(0) or log(1 - 0)
     return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
+def backpropagation(X, y_true):
+    global W1, b1, W2, b2, epsilon
+
+    # Initialize gradients
+    grad_W1 = np.zeros_like(W1)
+    grad_W2 = np.zeros_like(W2)
+    grad_b1 = np.zeros_like(b1)
+    grad_b2 = np.zeros_like(b2)
+
+    # Compute loss for current parameters
+    y_pred = forwardpropagation(X)
+    loss = compute_loss(y_true, y_pred)
+
+    # Compute gradients using numerical differentiation
+    # Gradient for W1
+    for i in range(W1.shape[0]):
+        for j in range(W1.shape[1]):
+            W1[i, j] += epsilon
+            y_pred = forwardpropagation(X)
+            loss_new = compute_loss(y_true, y_pred)
+            grad_W1[i, j] = (loss - loss_new) / epsilon
+            W1[i, j] -= epsilon
+
+    # Gradient for W2
+    for i in range(W2.shape[0]):
+        for j in range(W2.shape[1]):
+            W2[i, j] += epsilon
+            y_pred = forwardpropagation(X)
+            loss_new = compute_loss(y_true, y_pred)
+            grad_W2[i, j] = (loss - loss_new) / epsilon
+            W2[i, j] -= epsilon
+
+    # Gradient for b1
+    for i in range(b1.shape[1]):
+        b1[0, i] += epsilon
+        y_pred = forwardpropagation(X)
+        loss_new = compute_loss(y_true, y_pred)
+        grad_b1[0, i] = (loss - loss_new) / epsilon
+        b1[0, i] -= epsilon
+
+    # Gradient for b2
+    for i in range(b2.shape[1]):
+        b2[0, i] += epsilon
+        y_pred = forwardpropagation(X)
+        loss_new = compute_loss(y_true, y_pred)
+        grad_b2[0, i] = (loss - loss_new) / epsilon
+        b2[0, i] -= epsilon
+
+    return grad_W1, grad_W2, grad_b1, grad_b2
