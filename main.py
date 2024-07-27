@@ -24,3 +24,15 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 #Setting up starting functions
+def forwardpropagation(X):
+    z1 = np.dot(X, W1) + b1
+    a1 = ReLU(z1)
+    z2 = np.dot(a1, W2) + b2
+    a2 = sigmoid(z2)
+    return a2
+
+def compute_loss(y_true, y_pred):
+    epsilon = 1e-15  # small value to prevent log(0)
+    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)  # clip to prevent log(0) or log(1 - 0)
+    return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+
