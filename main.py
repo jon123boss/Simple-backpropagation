@@ -84,3 +84,36 @@ def backpropagation(X, y_true):
         b2[0, i] -= epsilon
 
     return grad_W1, grad_W2, grad_b1, grad_b2
+
+def train(X, y_true, epochs):
+    global W1, b1, W2, b2
+
+    for epoch in range(epochs):
+        # Perform backpropagation and update weights and biases
+        grad_W1, grad_W2, grad_b1, grad_b2 = backpropagation(X, y_true)
+
+        W1 += learning_rate * grad_W1
+        W2 += learning_rate * grad_W2
+        b1 += learning_rate * grad_b1
+        b2 += learning_rate * grad_b2
+
+        # Compute and print loss every 100 epochs
+        if (epoch+1) % 10000 == 0:
+            y_pred = forwardpropagation(X)
+            loss = compute_loss(y_true, y_pred)
+            print(f'Epoch {epoch+1}, Loss: {loss:.4f}')
+
+train(X, y_true, epochs=1000000)
+
+while True:
+    try:
+        i_a = float(input("Input a: "))
+        i_b = float(input("Input b: "))
+
+        # Normalize input for prediction
+        input_data = np.array([[i_a, i_b]])
+        prediction = forwardpropagation(input_data)[0, 0]
+        print(f"Prediction: {prediction:.4f}")
+
+    except ValueError:
+        print("Invalid input. Please enter a numeric value.")
